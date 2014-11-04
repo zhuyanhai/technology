@@ -5,6 +5,8 @@
  * @category F
  * @package F_View
  * @author allen <allenifox@163.com>
+ * 
+ * @method F_View_Helper_HeadLink headLink() 页面中使用 link 标签加载 css
  */
 final class F_View
 {
