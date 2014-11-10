@@ -89,15 +89,18 @@ class F_Controller_Router_Route
             $action     = 'Index';
             
             if ('/' !== $path) {
+                $checkModuleExist = false;
                 $path = trim($path, '/');
                 $pathArray = explode($this->_urlDelimiter, $path);
                 $pathArrayCount = count($pathArray);
                 
                 if (1 === $pathArrayCount) {// REQUEST_URI = /demo
+                    $checkModuleExist = true;
                     $controller = $pathArray[0];
                     $action     = 'Index';
                     unset($pathArray[0]);
                 } elseif (0 === $pathArrayCount % 2) {// REQUEST_URI = /demo/a
+                    $checkModuleExist = true;
                     $controller = $pathArray[0];
                     $action     = $pathArray[1];
                     unset($pathArray[0], $pathArray[1]);
@@ -106,14 +109,25 @@ class F_Controller_Router_Route
                     $controller = $pathArray[1];
                     $action     = $pathArray[2];
                     unset($pathArray[0], $pathArray[1], $pathArray[2]);
-
-                    if ($numSegs = count($pathArray)) {
-                        for ($i = 0; $i < $numSegs; $i = $i + 2) {
-                            $key = urldecode($path[$i]);
-                            $val = isset($path[$i + 1]) ? urldecode($path[$i + 1]) : null;
-                            $params[$key] = (isset($params[$key]) ? (array_merge((array) $params[$key], array($val))): $val);
-                        }
-                        $requestObj->setParams($params);
+                }
+                if ($numSegs = count($pathArray)) {
+                    for ($i = 0; $i < $numSegs; $i = $i + 2) {
+                        $key = urldecode($path[$i]);
+                        $val = isset($path[$i + 1]) ? urldecode($path[$i + 1]) : null;
+                        $params[$key] = (isset($params[$key]) ? (array_merge((array) $params[$key], array($val))): $val);
+                    }
+                    $requestObj->setParams($params);
+                }
+                if ($checkModuleExist) {
+                    try {
+                        $moduleClassName = ucfirst($controller).'_'.ucfirst($action).'Controller';
+                        $moduleClassObj = new $moduleClassName();
+                        unset($moduleClassObj);
+                        $module     = $controller;
+                        $controller = $action;
+                        $action     = 'index';
+                    } catch (Exception $e) {
+                        //continue
                     }
                 }
             }

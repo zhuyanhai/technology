@@ -2,7 +2,8 @@
 /**
  * 环境监测
  *
- * 可通过PHP配置判断环境【线上|线下】
+ * - 可通过PHP配置判断环境【线上|线下】
+ * - 判断是否是cli方式执行
  *
  * @category Utils
  * @package Utils_EnvCheck
@@ -36,4 +37,13 @@ final class Utils_EnvCheck
         return false;
     }
     
+    /**
+     * 判断是否是 cli 方式执行脚本
+     * 
+     * @return boolean
+     */
+    public static function isCli()
+    {
+        return (php_sapi_name() === 'cli') ? true : false;
+    }
 }

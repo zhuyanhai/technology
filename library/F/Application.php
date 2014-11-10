@@ -56,7 +56,8 @@ final class F_Application
             'U_' => $libraryPath,
             'T_' => $libraryPath,
             'Utils_' => $libraryPath,
-            'Model_' => APPLICATION_PATH . '/models/',
+            'Bll_' => APPLICATION_PATH . '/models/',
+            'Dao_' => APPLICATION_PATH . '/models/',
             'Controller_' => APPLICATION_PATH . '/controllers/',
         );
         
@@ -65,6 +66,17 @@ final class F_Application
         
         if (isset($this->_configs['autoloaderNamespaces'])) {
             self::$_autoloadNamespaces = array_merge(self::$_autoloadNamespaces, $this->_configs['autoloaderNamespaces']);
+        }
+        
+        if (!Utils_EnvCheck::isCli()) {//非cli方式执行脚本
+            if (!isset($_SERVER['HTTP_HOST'])) {
+                throw new F_Application_Exception('HTTP_HOST notfound');
+            }
+            $localDomainArray = explode('.', $_SERVER['HTTP_HOST']);
+            $localDomainCount = count($localDomainArray);
+            $this->_configs['cookie']['domain'] = $localDomainArray[$localDomainCount - 2] . '.' . $localDomainArray[$localDomainCount - 1];
+        } else {
+            $this->_configs['cookie']['domain'] = '';
         }
     }
     

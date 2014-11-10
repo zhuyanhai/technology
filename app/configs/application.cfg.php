@@ -26,7 +26,9 @@ return array(
         'class' => "Bootstrap",
     ),
     'cookie' => array(
-        'domain' => 'utan.com',
+    ),
+    'domain' => array(
+        
     ),
     'asset' => array(
         'isDedicatedDomain' => 'off',

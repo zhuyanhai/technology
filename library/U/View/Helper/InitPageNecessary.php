@@ -14,13 +14,10 @@ final class U_View_Helper_InitPageNecessary
 {
     public function initPageNecessary()
     {
-        $localDomain = $_SERVER['HTTP_HOST'];
-        $localDomainArray = explode('.', $localDomain);
-        $localDomainCount = count($localDomainArray);
-        $documentDomain = $localDomainArray[$localDomainCount - 2] . '.' . $localDomainArray[$localDomainCount - 1];
+        $cookieCfgs = F_Application::getInstance()->getConfigs('cookie');
         return <<<EOF
         <script>
-            document.domain = '{$documentDomain}';
+            document.domain = '{$cookieCfgs['domain']}';
             var __ns = {
                 namespace:function(e)
                 {
@@ -51,7 +48,7 @@ final class U_View_Helper_InitPageNecessary
             };
             __ns.namespace('env');
             __ns.namespace('user');
-            __ns.env = {domain:'{$documentDomain}'};
+            __ns.env = {domain:'{$cookieCfgs['domain']}'};
             __ns.user = null;
         </script>
 EOF;

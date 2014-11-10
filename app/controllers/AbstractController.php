@@ -7,9 +7,18 @@
  */
 abstract class AbstractController extends F_Controller_ActionAbstract
 {
+    /**
+     * 登录用户对象
+     * 
+     * @var type 
+     */
+    public $user = null;
+            
     public function __construct()
     {
         parent::__construct();
+        
+        //检测用户是否登录
     }
     
     public function preDispatch()
