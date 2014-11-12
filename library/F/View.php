@@ -6,7 +6,6 @@
  * @package F_View
  * @author allen <allenifox@163.com>
  * 
- * @method F_View_Helper_HeadLink headLink() 页面中使用 link 标签加载 css
  */
 final class F_View
 {
@@ -101,11 +100,15 @@ final class F_View
     {
         $filename = $this->_configs['scriptPath'];
         $filename .= $path . '.phtml';
-        
+
         if (!file_exists($filename)) {
-            throw new F_View_Exception('View ['. $filename .'] not found');
+            $filename = $this->_configs['layoutPath'];
+            $filename .= $path . '.phtml';
+            if (!file_exists($filename)) {
+                throw new F_View_Exception('View ['. $filename .'] not found');
+            }
         }
-        
+
         ob_start();
         include $filename;
         $scriptContent = ob_get_clean();

@@ -35,3 +35,10 @@ body{padding-top:50px}
 .container-fluid .jumbotron{
     padding:10px 10px;
 }
+.nav>li>a.nav-a-btn {
+    text-align: center;
+    margin-top: 5px;
+    padding: 5px;
+    margin: 10px auto;
+    border-radius:0px;
+}

@@ -31,7 +31,7 @@ final class U_View_Helper_InitPageNecessary
             };
             var __wait = function () 
             {
-                var __func_register_list = {};
+                var __func_register_list = [];
                 return function (func , isPerformList) 
                 {
                     if (func) {
@@ -45,7 +45,7 @@ final class U_View_Helper_InitPageNecessary
                         } , 10);
                     }
                 }
-            };
+            }();
             __ns.namespace('env');
             __ns.namespace('user');
             __ns.env = {domain:'{$cookieCfgs['domain']}'};
