@@ -2,7 +2,7 @@
 /**
  * PDO 连接池封装类
  */
-final class YR_Db_PdoConnectPool
+final class F_Db_PdoConnectPool
 {
     /**
      * 数据库连接需要用到的配置
@@ -19,14 +19,14 @@ final class YR_Db_PdoConnectPool
         static $dbHandelPool = array();
 
         if (!isset($connectConfig['host']) || !isset($connectConfig['port']) || !isset($connectConfig['username']) || !isset($connectConfig['password']) || !isset($connectConfig['charset'])) {
-            throw new Zend_Db_Exception('Connection failed: params error');
+            throw new F_Db_Exception('Connection failed: params error');
         }
         $dsn = 'mysql:host='.$connectConfig['host'].';port='.$connectConfig['port'];
         if (!isset($dbHandelPool[$dsn])) {
             try {
                 $dbHandelPool[$dsn] = new PDO($dsn, $connectConfig['username'], $connectConfig['password'], array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \''.$connectConfig['charset'].'\''));
             } catch (PDOException $e) {
-                throw new Zend_Db_Exception('Connection failed: '.$e->getMessage());
+                throw new F_Db_Exception('Connection failed: '.$e->getMessage());
             }
         }
         return $dbHandelPool[$dsn];
@@ -73,14 +73,14 @@ final class YR_Db_PdoConnectPool
     /**
      * 获取数据库全名
      */
-    public static function getDbName($adapter)
+    public static function getDbName($dbShortName)
     {
         if (empty(self::$dbDsn)) {
             self::bulidDbConfig();
         }
-        if (!isset(self::$dbDsn[$adapter])) {
-            throw new Zend_Db_Exception(__METHOD__.' $apapter 不存在');
+        if (!isset(self::$dbDsn[$dbShortName])) {
+            throw new F_Db_Exception(__METHOD__.' $dbShortName 不存在');
         }
-        return self::$dbDsn[$adapter]['dbName'];
+        return self::$dbDsn[$dbShortName]['dbName'];
     }
 }

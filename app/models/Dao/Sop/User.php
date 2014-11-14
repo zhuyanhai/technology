@@ -8,7 +8,7 @@
  * @subpackage Dao_Sop
  * @author allen <allenifox@163.com>
  */
-class Dao_User extends Dao_Abstract
+class Dao_Sop_User extends Dao_Abstract
 {
     /**
      * 完整表名

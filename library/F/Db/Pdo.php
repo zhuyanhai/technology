@@ -2,7 +2,7 @@
 /**
  * PDO 封装类
  */
-final class YR_Db_Pdo
+final class F_Db_Pdo
 {
     /**
      * 数据库连接配置
@@ -43,22 +43,22 @@ final class YR_Db_Pdo
     {
         static $instances = array();
 
-        if (!isset($options['db']) || (!isset($options['table']) || !is_array($options['table']) || count($options['table']) < 0)) {
-            throw new Zend_Db_Exception('数据表中 $options 配置错误');
+        if (!isset($options['dbShortName'])) {
+            throw new F_Db_Exception('数据表中 $options 配置错误');
         }
         
-        if (empty(YR_Db_PdoConnectPool::$dbDsn)) {//配置初始加载
-            YR_Db_PdoConnectPool::bulidDbConfig();
+        if (empty(F_Db_PdoConnectPool::$dbDsn)) {//配置初始加载
+            F_Db_PdoConnectPool::bulidDbConfig();
         }
-
-        if (isset(YR_Db_PdoConnectPool::$dbDsn[$options['adapter']])) {//每个库使用到的dsn
-            $dsn = 'mysql:host='.YR_Db_PdoConnectPool::$dbDsn[$options['adapter']]['host'].';port='.YR_Db_PdoConnectPool::$dbDsn[$options['adapter']]['port'];
+        print_r(F_Db_PdoConnectPool::$dbDsn[$options['dbShortName']]);exit;
+        if (isset(F_Db_PdoConnectPool::$dbDsn[$options['dbShortName']])) {//每个库使用到的dsn
+            $dsn = 'mysql:host='.F_Db_PdoConnectPool::$dbDsn[$options['dbShortName']]['host'].';port='.F_Db_PdoConnectPool::$dbDsn[$options['dbShortName']]['port'];
         } else {
-            throw new Zend_Db_Exception(__METHOD__ . ' adapter 不存在');
+            throw new F_Db_Exception(__METHOD__ . ' adapter 不存在');
         }
         
         if (!isset($instances[$dsn])) {
-            $instances[$dsn] = new YR_Db_Pdo(YR_Db_PdoConnectPool::$dbDsn[$options['adapter']]);
+            $instances[$dsn] = new F_Db_Pdo(F_Db_PdoConnectPool::$dbDsn[$options['dbShortName']]);
         }
         
         return $instances[$dsn];
@@ -164,7 +164,7 @@ final class YR_Db_Pdo
     {
         if (!$this->_stmtHandel->execute()) {
             $error = $this->_stmtHandel->errorInfo();
-            throw new Zend_Db_Exception('execute failed : '.$error[1].' '.$error[2]);
+            throw new F_Db_Exception('execute failed : '.$error[1].' '.$error[2]);
         }
         return $this->_stmtHandel->fetch(PDO::FETCH_ASSOC);
     }
@@ -180,7 +180,7 @@ final class YR_Db_Pdo
         if (!$this->_stmtHandel->execute()) {
             $error = $this->_stmtHandel->errorInfo();
             print_r($error); 
-            throw new Zend_Db_Exception('execute failed : '.$error[1].' '.$error[2]);
+            throw new F_Db_Exception('execute failed : '.$error[1].' '.$error[2]);
         }
         return $this->_stmtHandel->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -194,7 +194,7 @@ final class YR_Db_Pdo
             if (empty($this->_dsn)) {//默认连接从库
                 $this->changeSlave();
             }
-            $this->_dbHandel = YR_Db_PdoConnectPool::get($this->_dsn);
+            $this->_dbHandel = F_Db_PdoConnectPool::get($this->_dsn);
         }
     }
 }

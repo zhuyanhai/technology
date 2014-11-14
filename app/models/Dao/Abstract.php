@@ -31,6 +31,15 @@ Abstract class Dao_Abstract
     protected static $_primaryKey = '';
     
     /**
+     * 
+     */
+    public static function createRow($rowData)
+    {
+        $pdo = static::_getManager();
+        print_r($pdo);
+    }
+    
+    /**
      * 获取数据表中单条记录信息
      * 
      * @param string $fieldValue 字段值
@@ -97,6 +106,23 @@ Abstract class Dao_Abstract
             return true;
         }
         return false;
+    }
+    
+    /**
+     * 获取数据库操作对象
+     * 
+     * @staticvar null $pdo
+     * @return YR_Db_Pdo
+     */
+    public static function _getManager()
+    {
+        static $pdo = null;
+        if (is_null($pdo)) {
+            $pdo = F_Db_Pdo::getInstance(array(
+                'dbShortName' => static::$_dbShortName,
+            ));
+        }
+        return $pdo;
     }
     
 }
