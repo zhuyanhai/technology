@@ -6,11 +6,22 @@
  */
 return array(
     'default' => array(
-        'host'     => '192.168.1.235',
-        'port'     => '3306',
-        'username' => 'app1',
-        'password' => '19820111',
-        'charset'  => 'utf8',
+        'master' => array(
+            'host'     => '192.168.1.235',
+            'port'     => '3306',
+            'username' => 'app1',
+            'password' => '19820111',
+            'charset'  => 'utf8',
+        ),
+        'slave' => array(
+            'host'     => '192.168.1.235',
+            'port'     => '3306',
+            'username' => 'app1',
+            'password' => '19820111',
+            'charset'  => 'utf8',
+        ),
     ),
-    'sop' => 'db2_utan_sop',
+    'sop' => array(
+        'dbName' => 'db2_utan_sop',
+    )
 );

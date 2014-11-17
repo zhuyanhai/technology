@@ -31,12 +31,57 @@ Abstract class Dao_Abstract
     protected static $_primaryKey = '';
     
     /**
+     * 插入行记录
      * 
+     * @param array $rowData 插入行的内容
+     * @return string 返回插入成功后的主键值
      */
-    public static function createRow($rowData)
+    public static function insert($rowData)
     {
-        $pdo = static::_getManager();
-        print_r($pdo);
+        $pdo = static::_getManager()->changeMaster();
+        static::_insert($rowData);
+        $rowData[static::$_primaryKey] = $pdo->insert($rowData, F_Db_PdoConnectPool::getDbName(static::$_dbShortName) . '.' . static::$_tableName);
+        static::_postInsert($rowData);
+        return $rowData[static::$_primaryKey];
+    }
+    
+    /**
+     * 更新行记录
+     * 
+     * @param array $rowData 更新行的内容
+     * @param string $whereCondition 更新条件
+     * @param array $whereBind 更新条件绑定数据
+     * @return $rowCount 影响行数
+     */
+    public static function update($rowData, $whereCondition, $whereBind)
+    {
+        $pdo = static::_getManager()->changeMaster();
+        static::_update($rowData, $whereBind);
+        $rowCount = $pdo->update($rowData, $whereCondition, $whereBind, F_Db_PdoConnectPool::getDbName(static::$_dbShortName) . '.' . static::$_tableName);
+        static::_postUpdate($rowData, $whereBind);
+        return $rowCount;
+    }
+    
+    /**
+     * 删除行记录
+     * 
+     * @param string $whereCondition 更新条件
+     * @param array $whereBind 更新条件绑定数据
+     * @return $rowCount 影响行数
+     */
+    public static function delete($whereCondition, $whereBind)
+    {
+        //todo
+    }
+    
+    /**
+     * 查询记录 - 根据条件
+     * 
+     * @return F_Db_Pdo
+     */
+    public static function find($fields, $whereCondition)
+    {
+        //todo
     }
     
     /**
@@ -112,9 +157,9 @@ Abstract class Dao_Abstract
      * 获取数据库操作对象
      * 
      * @staticvar null $pdo
-     * @return YR_Db_Pdo
+     * @return F_Db_Pdo
      */
-    public static function _getManager()
+    private static function _getManager()
     {
         static $pdo = null;
         if (is_null($pdo)) {
@@ -123,6 +168,70 @@ Abstract class Dao_Abstract
             ));
         }
         return $pdo;
+    }
+    
+//----- 以下是 hook 方法，可在子类中使用，使用时必须调用相关的父类方法，例如： parent::_insert($rowData);
+    
+    /**
+     * insert 前
+     * 
+     * @param array $rowData 行记录
+     */
+    protected static function _insert(&$rowData)
+    {
+        //todo
+    }
+    
+    /**
+     * insert 后
+     * 
+     * @param array $rowData 行记录
+     */
+    protected static function _postInsert(&$rowData)
+    {
+        //todo
+    }
+    
+    /**
+     * update 前
+     * 
+     * @param array $rowData 行记录
+     * @param array $whereBind where条件绑定数据
+     */
+    protected static function _update(&$rowData, $whereBind)
+    {
+        //todo
+    }
+    
+    /**
+     * update 后
+     * 
+     * @param array $rowData 行记录
+     * @param array $whereBind where条件绑定数据
+     */
+    protected static function _postUpdate(&$rowData, $whereBind)
+    {
+        //todo
+    }
+    
+    /**
+     * delete 前
+     * 
+     * @param array $whereBind where条件绑定数据
+     */
+    protected static function _delete($whereBind)
+    {
+        //todo
+    }
+    
+    /**
+     * delete 后
+     * 
+     * @param array $whereBind where条件绑定数据
+     */
+    protected static function _postDelete($whereBind)
+    {
+        //todo
     }
     
 }

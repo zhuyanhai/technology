@@ -35,38 +35,27 @@ final class F_Db_PdoConnectPool
     /**
      * 第一次访问数据库时，初始bulid数据库连接需要的配置
      */
-    public static function bulidDbConfig()
-    {   
-        if (empty(self::$dbDsn)) {//配置初始加载
-            $env = 'production';
-            if(defined('APPLICATION_ENV')){
-                $env = APPLICATION_ENV;
+    public static function bulidDbConfig($dbShortName)
+    {
+        static $defaultParams = array();
+        
+        if (!isset(self::$dbDsn[$dbShortName])) {//配置初始加载
+            $dbConfigsObj = F_Config::load('/configs/db.cfg.php');
+            
+            if (empty($defaultParams)) {
+                $defaultParams = $dbConfigsObj->get('default');
             }
-            $dbConfigs = F_Application::getInstance()->getConfigs();
-            $defaultParams = array();
-            if(isset($dbConfigs['default'])){
-                $defaultParams = $dbConfigs['default'];
-                unset($dbConfigs['default']);
+            
+            $dbConfigs = $dbConfigsObj->get($dbShortName);
+            self::$dbDsn[$dbShortName]['dbName'] = $dbConfigs['dbName'];
+            if (isset($dbConfigs['params'])) {
+                $params = array_merge($defaultParams, $dbConfigs['params']);
+            } else {
+                $params = $defaultParams;
             }
-            foreach ($dbConfigs as $id => $dbCfg) {
-                self::$dbDsn[$id]['dbName'] = $dbCfg['dbname'];
-                if (isset($dbCfg['params'])) {
-                    $params = array_merge($defaultParams['params'], $dbCfg['params']);
-                } else {
-                    $params = $defaultParams['params'];
-                }
-                if (isset($params['slave'])) {
-                    $slave = $params['slave'];
-                    unset($params['slave']);
-                    self::$dbDsn[$id]['slave'] = array_merge($params, $slave);
-                    unset($slave);
-                } else {
-                    self::$dbDsn[$id]['slave'] = array($params);
-                }
-                self::$dbDsn[$id]['master'] = $params;
-                unset($params);
-            } 
-            unset($dbConfigs, $defaultParams);
+            self::$dbDsn[$dbShortName]['master'] = $params['master'];
+            self::$dbDsn[$dbShortName]['slave']  = $params['slave'];
+            unset($params, $dbConfigs);
         }
     }
     
@@ -75,11 +64,8 @@ final class F_Db_PdoConnectPool
      */
     public static function getDbName($dbShortName)
     {
-        if (empty(self::$dbDsn)) {
-            self::bulidDbConfig();
-        }
         if (!isset(self::$dbDsn[$dbShortName])) {
-            throw new F_Db_Exception(__METHOD__.' $dbShortName 不存在');
+            self::bulidDbConfig($dbShortName);
         }
         return self::$dbDsn[$dbShortName]['dbName'];
     }

@@ -1,15 +1,17 @@
 <?php
 /**
  * PDO 封装类
+ * 
+ * @method string lastInsertId (([ string $name= NULL ] ) 返回最后insert的行的主键值
  */
 final class F_Db_Pdo
 {
     /**
-     * 数据库连接配置
+     * 数据库缩略名字
      * 
-     * @var array 
+     * @var string 
      */
-    private $_dsnConfigs = array();
+    private $_dbShortName = null;
     
     /**
      * 当前要用到的数据库连接配置
@@ -37,7 +39,7 @@ final class F_Db_Pdo
      * 
      * @staticvar array $instances
      * @param array $options
-     * @return \YR_Db_Pdo
+     * @return \F_Db_Pdo
      */
     public static function getInstance($options)
     {
@@ -46,33 +48,28 @@ final class F_Db_Pdo
         if (!isset($options['dbShortName'])) {
             throw new F_Db_Exception('数据表中 $options 配置错误');
         }
-        
-        if (empty(F_Db_PdoConnectPool::$dbDsn)) {//配置初始加载
-            F_Db_PdoConnectPool::bulidDbConfig();
-        }
-        print_r(F_Db_PdoConnectPool::$dbDsn[$options['dbShortName']]);exit;
-        if (isset(F_Db_PdoConnectPool::$dbDsn[$options['dbShortName']])) {//每个库使用到的dsn
-            $dsn = 'mysql:host='.F_Db_PdoConnectPool::$dbDsn[$options['dbShortName']]['host'].';port='.F_Db_PdoConnectPool::$dbDsn[$options['dbShortName']]['port'];
+
+        if (!isset(F_Db_PdoConnectPool::$dbDsn[$options['dbShortName']])) {//每个库使用到dsn配置的初始加载
+            F_Db_PdoConnectPool::bulidDbConfig($options['dbShortName']);
         } else {
-            throw new F_Db_Exception(__METHOD__ . ' adapter 不存在');
+            throw new F_Db_Exception(__METHOD__ . ' '.$options['dbShortName'].' 在 F_Db_PdoConnectPool::$dbDsn 中不存在');
         }
         
-        if (!isset($instances[$dsn])) {
-            $instances[$dsn] = new F_Db_Pdo(F_Db_PdoConnectPool::$dbDsn[$options['dbShortName']]);
+        if (!isset($instances[$options['dbShortName']])) {
+            $instances[$options['dbShortName']] = new F_Db_Pdo($options);
         }
         
-        return $instances[$dsn];
+        return $instances[$options['dbShortName']];
     }
     
     /**
      * 构造函数
      * 
      * @param array $options
-     * @throws Zend_Db_Adapter_Exception
      */
-    public function __construct($dsnConfigs)
+    public function __construct($options)
     {
-        $this->_dsnConfigs = $dsnConfigs;
+        $this->_dbShortName = $options['dbShortName'];
     }
     
     /**
@@ -87,7 +84,7 @@ final class F_Db_Pdo
     /**
      * 主动关闭数据库连接
      * 
-     * @return \YR_Db_Mysqli
+     * @return \F_Db_Pdo
      */
     public function close()
     {
@@ -97,36 +94,58 @@ final class F_Db_Pdo
     }
     
     /**
-     * 主动切换使用的【主】数据库连接
+     * 插入数据
      * 
-     * @return \YR_Db_Mysqli
+     * @param array $rowData 需要插入的数据
+     * @param string $tableName 数据表名字[格式：db.table]
+     * @return string
      */
-    public function changeMaster()
+    public function insert($rowData, $tableName)
     {
-        $this->_dsn = $this->_dsnConfigs['master'];
-        $this->_dbHandel   = null;
-        $this->_stmtHandel = null;
-        return $this;
+        $fields = array_keys($rowData);
+        $this->prepare('INSERT INTO '. $tableName . ' ('.implode(',', $fields).') VALUES (:'.implode(',:', $fields).')');
+        foreach ($rowData as $k => $v) {
+            $this->bindParam(':'.$k, $v, PDO::PARAM_STR);
+        }
+        return $this->execute()->lastInsertId();
     }
     
     /**
-     * 主动切换使用的【从】数据库连接
+     * 更新数据
      * 
-     * @return \YR_Db_Mysqli
+     * @param array $rowData 需要更新的数据
+     * @param string $whereCondition 更新条件
+     * @param array $whereBind 更新条件绑定数据
+     * @param string $tableName 数据表名字[格式：db.table]
+     * @return int
      */
-    public function changeSlave()
+    public function update($rowData, $whereCondition, $whereBind, $tableName)
     {
-        $this->_dsn = $this->_dsnConfigs['slave'][0];
-        $this->_dbHandel   = null;
-        $this->_stmtHandel = null;
-        return $this;
+        $fields = array_keys($rowData);
+        
+        $sql = 'UPDATE ' . $tableName . ' SET ';
+        foreach ($rowData as $rk => $rv) {
+            $sql .= $rk . '=:' . $rk . ',';
+        }
+        $sql = rtrim($sql, ',');
+        $sql .= ' WHERE ' . $whereCondition; 
+        $this->prepare($sql);
+        foreach ($rowData as $rk => $rv) {
+            $this->bindParam(':'.$rk, $rv, PDO::PARAM_STR);
+        }
+        foreach ($whereBind as $wk => $wv) {
+            $this->bindParam(':'.$wk, $wv, PDO::PARAM_STR);
+        }
+        return $this->execute()->_stmtHandel->rowCount();
     }
-    
-   /**
-	* prepare 预处理sql
-    * 
-	* @param string $sql
-	**/
+
+    /**
+     * prepare 预处理sql
+     * 
+     * @param string $sql
+     * @return \F_Db_Pdo
+     * @throws PDOException
+     */
     public function prepare($sql)
     {
     	$this->_connect();
@@ -146,7 +165,7 @@ final class F_Db_Pdo
      * 
      * @param string $parameter
      * @param mixed $variable
-     * @return \YR_Db_Pdo
+     * @return \F_Db_Pdo
      */
     public function bindParam($parameter , $variable = null)
     {
@@ -155,10 +174,25 @@ final class F_Db_Pdo
     }
     
     /**
+     * 执行
+     * 
+     * @return \F_Db_Pdo
+     * @throws F_Db_Exception
+     */
+    public function execute()
+    {
+        if (!$this->_stmtHandel->execute()) {
+            $error = $this->_stmtHandel->errorInfo();
+            throw new F_Db_Exception('execute failed : '.$error[1].' '.$error[2]);
+        }
+        return $this;
+    }
+    
+    /**
      * 获取单行记录
      * 
      * @return mixed
-     * @throws Zend_Db_Exception
+     * @throws F_Db_Exception
      */
     public function fetchRow()
     {
@@ -173,26 +207,66 @@ final class F_Db_Pdo
      * 获取多行记录
      * 
      * @return array
-     * @throws Zend_Db_Exception
+     * @throws F_Db_Exception
      */
     public function fetchAll()
     {
         if (!$this->_stmtHandel->execute()) {
             $error = $this->_stmtHandel->errorInfo();
-            print_r($error); 
             throw new F_Db_Exception('execute failed : '.$error[1].' '.$error[2]);
         }
         return $this->_stmtHandel->fetchAll(PDO::FETCH_ASSOC);
     }
     
+     /**
+     * 主动切换使用的【主】数据库连接
+     * 
+     * @return \F_Db_Pdo
+     */
+    public function changeMaster()
+    {
+        $this->_dsn = F_Db_PdoConnectPool::$dbDsn[$this->_dbShortName]['master'];
+        $this->_dbHandel   = null;
+        $this->_stmtHandel = null;
+        return $this;
+    }
+    
+    /**
+     * 主动切换使用的【从】数据库连接
+     * 
+     * @return \F_Db_Pdo
+     */
+    public function changeSlave()
+    {
+        $this->_dsn = F_Db_PdoConnectPool::$dbDsn[$this->_dbShortName]['slave'];
+        $this->_dbHandel   = null;
+        $this->_stmtHandel = null;
+        return $this;
+    }
+    
+    /**
+     * 魔术方法，调用PDO对象中的方法
+     * 
+     * @param string $method
+     * @param array $args
+     * @return mixed
+     */
+    public function __call($method, $args)
+    {
+        $this->_connect();
+    	return call_user_func_array(array($this->_dbHandel, $method), $args);
+    }
+    
     /**
      * 连接数据库
+     * 
+     * @throws F_Db_Exception
      */
     private function _connect()
     {
         if (is_null($this->_dbHandel)) {
-            if (empty($this->_dsn)) {//默认连接从库
-                $this->changeSlave();
+            if (empty($this->_dsn)) {
+                throw new F_Db_Exception('$this->_dsn 不能为空');
             }
             $this->_dbHandel = F_Db_PdoConnectPool::get($this->_dsn);
         }
