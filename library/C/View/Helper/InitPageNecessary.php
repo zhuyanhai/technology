@@ -10,7 +10,7 @@
  * @author allen <allen@yuorngcorp.com>
  * @package F_View
  */
-final class U_View_Helper_InitPageNecessary
+final class C_View_Helper_InitPageNecessary
 {
     public function initPageNecessary()
     {

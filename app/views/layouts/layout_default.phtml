@@ -47,11 +47,15 @@
             <div class="row">
                 <div id="sop-sidebarBoxId" class="col-sm-3 col-md-2 sidebar">
                     <ul class="nav nav-sidebar">
-                        <?php if($this->visitCheck(array('module' => 'product'))):?>
-                            <?php echo $this->render('slot/menu_list_of_product')?>
-                        <?php else:?>
-                        <li class="active"><a href="###" onclick="return false;">Overview</a></li>
-                        <?php endif?>
+                        <?php 
+                            if($this->visitCheck(array('module' => 'product'))) {
+                                echo $this->render('slot/menu_list_of_product');
+                            } elseif ($this->visitCheck(array('module' => 'frameworkStudy'))) {
+                                echo $this->render('slot/menu_list_of_frameworkStudy');
+                            } else {
+                                echo '<li class="active"><a href="###" onclick="return false;">Overview</a></li>';
+                            }
+                        ?>
                     </ul>
                     <script>
                         __wait(function(){

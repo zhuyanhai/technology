@@ -113,7 +113,8 @@ Abstract class Dao_Abstract
             
         }
     }
-    
+ 
+//---- 以下为私有方法
     
     /**
      * 检测是否使用缓存

@@ -198,7 +198,7 @@ final class F_View
                 } catch(F_Application_Exception $e) {
                     if (5555 === intval($e->getCode())) {
                         $isWhileCall = true;
-                        $class = 'U_View_Helper_' . ucfirst($name);
+                        $class = 'C_View_Helper_' . ucfirst($name);
                     }
                 }
             }

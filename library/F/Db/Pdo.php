@@ -118,6 +118,7 @@ final class F_Db_Pdo
      * @param array $whereBind 更新条件绑定数据
      * @param string $tableName 数据表名字[格式：db.table]
      * @return int
+     * @throws PDOException
      */
     public function update($rowData, $whereCondition, $whereBind, $tableName)
     {
@@ -125,16 +126,20 @@ final class F_Db_Pdo
         
         $sql = 'UPDATE ' . $tableName . ' SET ';
         foreach ($rowData as $rk => $rv) {
-            $sql .= $rk . '=:' . $rk . ',';
+            $sql .= $rk . '=:FIELD_' . $rk . ',';
         }
         $sql = rtrim($sql, ',');
         $sql .= ' WHERE ' . $whereCondition; 
         $this->prepare($sql);
         foreach ($rowData as $rk => $rv) {
-            $this->bindParam(':'.$rk, $rv, PDO::PARAM_STR);
+            $this->bindParam(':FIELD_'.$rk, $rv, PDO::PARAM_STR);
         }
         foreach ($whereBind as $wk => $wv) {
-            $this->bindParam(':'.$wk, $wv, PDO::PARAM_STR);
+            $wkParam = ':'.$wk;
+            if (!preg_match('%'.$wkParam.'%', $whereCondition)) {
+                throw new PDOException('Pdo update where bindParam ['.$wkParam.'] not exist');
+            }
+            $this->bindParam($wkParam, $wv, PDO::PARAM_STR);
         }
         return $this->execute()->_stmtHandel->rowCount();
     }

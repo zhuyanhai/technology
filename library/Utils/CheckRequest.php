@@ -15,7 +15,7 @@ class Utils_CheckRequest
      */
     public static function isFromPc()
     {
-        $tMobileDetectObj = T_MobileDetect::getInstance();
+        $tMobileDetectObj = F_MobileDetect::getInstance();
         return (!$tMobileDetectObj->isMobile() && !$tMobileDetectObj->isTablet())? true:false;
     }
     
@@ -26,7 +26,7 @@ class Utils_CheckRequest
      */
     public static function isFromMobile()
     {
-        return (T_MobileDetect::getInstance())? true:false;
+        return (F_MobileDetect::getInstance())? true:false;
     }
     
     /**
@@ -36,6 +36,6 @@ class Utils_CheckRequest
      */
     public static function isFromTablet()
     {
-        return (T_MobileDetect::getInstance()->isTablet())? true:false;
+        return (F_MobileDetect::getInstance()->isTablet())? true:false;
     }
 }

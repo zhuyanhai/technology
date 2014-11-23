@@ -14,10 +14,9 @@ final class F_Db_PdoConnectPool
     /**
      * 创建PDO链接对象
      */
-    public static function get($connectConfig)
+    public static function &get($connectConfig)
     {
         static $dbHandelPool = array();
-
         if (!isset($connectConfig['host']) || !isset($connectConfig['port']) || !isset($connectConfig['username']) || !isset($connectConfig['password']) || !isset($connectConfig['charset'])) {
             throw new F_Db_Exception('Connection failed: params error');
         }

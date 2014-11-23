@@ -22,7 +22,7 @@
  *
  * @version     2.8.5
  */
-final class T_MobileDetect
+final class F_MobileDetect
 {
 
     /**
@@ -596,13 +596,13 @@ final class T_MobileDetect
      * 单例模式
      * 
      * @staticvar null $instance
-     * @return \T_MobileDetect
+     * @return \F_MobileDetect
      */
     public static function getInstance()
     {
         static $instance = null;
         if (is_null($instance)) {
-            $instance = new T_MobileDetect();
+            $instance = new F_MobileDetect();
         }
         return $instance;
     }

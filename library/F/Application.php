@@ -53,8 +53,7 @@ final class F_Application
         $libraryPath = ROOT_PATH . '/library/';
         self::$_autoloadNamespaces = array(
             'F_' => $libraryPath,
-            'U_' => $libraryPath,
-            'T_' => $libraryPath,
+            'C_' => $libraryPath,
             'Utils_' => $libraryPath,
             'Bll_' => APPLICATION_PATH . '/models/',
             'Dao_' => APPLICATION_PATH . '/models/',
