@@ -9,17 +9,15 @@ return array(
         'master' => array(
             'host'     => '192.168.1.235',
             'port'     => '3306',
-            'username' => 'app1',
-            'password' => '19820111',
-            'charset'  => 'utf8',
         ),
         'slave' => array(
             'host'     => '192.168.1.235',
             'port'     => '3306',
-            'username' => 'app1',
-            'password' => '19820111',
-            'charset'  => 'utf8',
         ),
+        'username' => 'app1',
+        'password' => '19820111',
+        'charset'  => 'utf8mb4',
+        'collation' => 'utf8mb4_general_ci',
     ),
     'sop' => array(
         'dbName' => 'db2_utan_sop',
