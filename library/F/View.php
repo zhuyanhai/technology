@@ -64,6 +64,16 @@ final class F_View
     }
     
     /**
+     * 获取当前设置的布局文件名，相对application.cfg.php中设置的layout的路径
+     *  
+     * @return string
+     */
+    public function getLayout()
+    {
+        return $this->_layoutPath;
+    }
+    
+    /**
      * 设置布局文件名，相对application.cfg.php中设置的layout的路径
      *  
      * @param string $filename 首位不要有【/】，正确写法是：admin/a，尾部不需要后缀
