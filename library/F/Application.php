@@ -35,6 +35,13 @@ final class F_Application
      * @var F_Application 
      */
     private static $_instance = null;
+    
+    /**
+     * 调试错误类对象实例
+     * 
+     * @var \Whoops\Run
+     */
+    private $_whoops = null;
 
     /**
      * 构造函数
@@ -54,6 +61,7 @@ final class F_Application
         self::$_autoloadNamespaces = array(
             'F_' => $libraryPath,
             'C_' => $libraryPath,
+            'T_' => $librarypath,
             'Utils_' => $libraryPath,
             'Bll_' => APPLICATION_PATH . '/models/',
             'Dao_' => APPLICATION_PATH . '/models/',
@@ -68,12 +76,40 @@ final class F_Application
         }
         
         if (!Utils_EnvCheck::isCli()) {//非cli方式执行脚本
+            
+            if (!Utils_EnvCheck::isProduction()) {//非正式环境
+                require_once APPLICATION_PATH . '/../library/T/Whoops/autoload.php';
+                $this->_whoops = new \Whoops\Run;
+                if (F_Controller_Request_Http::getInstance()->isXmlHttpRequest()) {//ajax 请求
+                    $this->_whoops->pushHandler(new \Whoops\Handler\JsonResponseHandler);
+                } else {
+                    $this->_whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+                }
+                $this->_whoops->register();
+            }
+
+        
             if (!isset($_SERVER['HTTP_HOST'])) {
                 throw new F_Application_Exception('HTTP_HOST notfound');
             }
+            
             $localDomainArray = explode('.', $_SERVER['HTTP_HOST']);
             $localDomainCount = count($localDomainArray);
-            $this->_configs['cookie']['domain'] = $localDomainArray[$localDomainCount - 2] . '.' . $localDomainArray[$localDomainCount - 1];
+            if ($localDomainCount > 3) {
+                $localDomainLength = count($localDomain);
+                if (in_array($localDomainArray[$localDomainCount-1], array('com','cn','net')) && 
+                   in_array($localDomainArray[$localDomainCount-2], array('com','cn','net'))) {
+                    $cookeDomain = $localDomainArray[$localDomainCount-3].'.'.$localDomainArray[$localDomainCount-2].'.'.$localDomainArray[$localDomainCount-1];
+                } else {
+                    $cookeDomain = $localDomainArray[$localDomainCount-2].'.'.$localDomainArray[$localDomainCount-1];
+                }
+            } else if($localDomainCount == 3){
+                $cookeDomain = $localDomainArray[1].'.'.$localDomainArray[2];
+            } else {
+                $cookeDomain = $localDomainArray[0].'.'.$localDomainArray[1];
+            }
+
+            $this->_configs['cookie']['domain'] = '.' . $cookeDomain;
         } else {
             $this->_configs['cookie']['domain'] = '';
         }
@@ -125,6 +161,16 @@ final class F_Application
 		} else {
 			require $file;
 		}
+    }
+    
+    /**
+     * 获取错误调试类对象
+     * 
+     * @return \Whoops\Run
+     */
+    public function getWhoops()
+    {
+        return $this->_whoops;
     }
     
     /**

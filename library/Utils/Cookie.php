@@ -2,8 +2,9 @@
 /**
  * cookie 工具类
  * 
+ * @package Utils
  */
-class Utils_Cookie
+final class Utils_Cookie
 {
     /**
      * 设置仅服务端 Cookie

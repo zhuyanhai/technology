@@ -5,8 +5,10 @@
  * - 检测请求是否来至PC端
  * - 检测请求是否来至移动端
  * - 检测请求是否来至平板
+ * 
+ * @package Utils
  */
-class Utils_CheckRequest
+final class Utils_CheckRequest
 {
     /**
      * 请求是否来至PC

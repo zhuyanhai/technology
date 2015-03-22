@@ -5,9 +5,7 @@
  * - 可通过PHP配置判断环境【线上|线下】
  * - 判断是否是cli方式执行
  *
- * @category Utils
- * @package Utils_EnvCheck
- * @author allen <allenifox@163.com>
+ * @package Utils
  */
 final class Utils_EnvCheck
 {
