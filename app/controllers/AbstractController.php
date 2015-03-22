@@ -30,7 +30,8 @@ abstract class AbstractController extends F_Controller_ActionAbstract
     {
         parent::postDispatch();
         
-        if (empty($this->view->getLayout())) {
+        $layout = $this->view->getLayout();
+        if (empty($layout)) {
             $this->view->setLayout('layout_default');
         }
     }
