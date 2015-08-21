@@ -2,8 +2,9 @@
 /**
  * http 工具类
  * 
+ * @package Utils
  */
-class Utils_Http
+final class Utils_Http
 {
     /**
      * 获得客户端系统信息:操作系统、浏览器等

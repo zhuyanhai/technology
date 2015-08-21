@@ -16,10 +16,8 @@ class ErrorController extends F_Controller_ActionAbstract
      */
     public function errorAction()
     {
-        Utils_Http::outHeaderEncoding();
-        
         $error = $this->_requestObj->getParam('errorHandler');
-        print_r($error);
+
         if (!$error instanceof Exception) {//非异常类对象，有问题，按默认404处理
             
         } else {
@@ -31,17 +29,21 @@ class ErrorController extends F_Controller_ActionAbstract
                     
                     break;
                 case 500://系统错误
-                    
+                    if (!Utils_EnvCheck::isProduction()) {//非正式环境
+                        F_Application::getInstance()->getWhoops()->handleException($error);
+                    }
                     break;
                 case 999://站点维护
                     
                     break;
                 default://抛异常时没有定义错误编号
-                    
+                    if (!Utils_EnvCheck::isProduction()) {//非正式环境
+                        F_Application::getInstance()->getWhoops()->handleException($error);
+                    }
                     break;
             }
         }
-        exit;
+        Utils_Exit::stop();
     }
     
 }

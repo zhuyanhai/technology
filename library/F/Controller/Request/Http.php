@@ -360,6 +360,45 @@ class F_Controller_Request_Http
     }
     
     /**
+     * Return the value of the given HTTP header. Pass the header name as the
+     * plain, HTTP-specified header name. Ex.: Ask for 'Accept' to get the
+     * Accept header, 'Accept-Encoding' to get the Accept-Encoding header.
+     *
+     * @param string $header HTTP header name
+     * @return string|false HTTP header value, or false if not found
+     * @throws F_Controller_Request_Exception
+     */
+    public function getHeader($header)
+    {
+        if (empty($header)) {
+            throw new F_Controller_Request_Exception('An HTTP header name is required');
+        }
+
+        // Try to get it from the $_SERVER array first
+        $temp = 'HTTP_' . strtoupper(str_replace('-', '_', $header));
+        if (isset($_SERVER[$temp])) {
+            return $_SERVER[$temp];
+        }
+
+        // This seems to be the only way to get the Authorization header on
+        // Apache
+        if (function_exists('apache_request_headers')) {
+            $headers = apache_request_headers();
+            if (isset($headers[$header])) {
+                return $headers[$header];
+            }
+            $header = strtolower($header);
+            foreach ($headers as $key => $value) {
+                if (strtolower($key) == $header) {
+                    return $value;
+                }
+            }
+        }
+
+        return false;
+    }
+    
+    /**
      * Return the method by which the request was made
      *
      * @return string
@@ -437,6 +476,18 @@ class F_Controller_Request_Http
         }
 
         return false;
+    }
+    
+    /**
+     * Is the request a Javascript XMLHttpRequest?
+     *
+     * Should work with Prototype/Script.aculo.us, possibly others.
+     *
+     * @return boolean
+     */
+    public function isXmlHttpRequest()
+    {
+        return ($this->getHeader('X_REQUESTED_WITH') == 'XMLHttpRequest');
     }
     
     /**
