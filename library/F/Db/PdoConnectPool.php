@@ -40,11 +40,9 @@ final class F_Db_PdoConnectPool
         
         if (!isset(self::$dbDsn[$dbShortName])) {//配置初始加载
             $dbConfigsObj = F_Config::load('/configs/db.cfg.php');
-            
             if (empty($defaultParams)) {
                 $defaultParams = $dbConfigsObj->get('default');
             }
-            
             $dbConfigs = $dbConfigsObj->get($dbShortName);
             self::$dbDsn[$dbShortName]['dbName'] = $dbConfigs['dbName'];
             if (isset($dbConfigs['params'])) {

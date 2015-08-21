@@ -45,7 +45,20 @@ abstract class F_Controller_ActionAbstract
      * @var F_View 
      */
     public $view = null;
-
+    
+    /**
+     * 错误编号 0 为无错误 <0 错误标号
+     * 
+     * @var int 
+     */
+    private $_errorCode = 0;
+    
+    /**
+     * 错误信息
+     * 
+     * @var string
+     */
+    private $_errorMsg = '';
 
     /**
      * 构造函数
@@ -107,6 +120,38 @@ abstract class F_Controller_ActionAbstract
     }
     
     /**
+     * 设置错误
+     * 
+     * @param int $error
+     * @param string $msg
+     */
+    protected function error($errorMsg = '', $errorCode = -1)
+    {
+        $this->_errorCode = $errorCode;
+        $this->_errorMsg  = $errorMsg;
+        return $this;
+    }
+    
+    /**
+     * 返回给客户端
+     * 
+     * @param array $attr 需要返回的内容
+     * @return void
+     */
+    public function response($attr = array())
+    {
+        $response = array(
+            'status'        => $this->_errorCode,
+            'data'          => $attr,
+            'msg'           => $this->_errorMsg,
+        );
+        $this->_responseObj->setHeader('Content-Type', 'application/json', true);
+        $body = json_encode($response);
+        $this->_responseObj->setBody($body);
+        $this->_responseObj->sendResponseAndExit();
+    }
+    
+    /**
      * 获取转向器对象，负责URL跳转处理
      * 
      * @return F_Controller_Redirector
@@ -117,6 +162,32 @@ abstract class F_Controller_ActionAbstract
             $this->_redirectorObj = F_Controller_Redirector::getInstance();
         }
         return $this->_redirectorObj;
+    }
+    
+    /**
+     * 获取request对象
+     * 
+     * @return F_Controller_Request_Http
+     */
+    public function getRequestObj()
+    {
+        if (is_null($this->_requestObj)) {
+            $this->_requestObj = F_Controller_Request_Http::getInstance();
+        }
+        return $this->_requestObj;
+    }
+    
+    /**
+     * 获取response对象
+     * 
+     * @return F_Controller_Response_Http
+     */
+    public function getResponseObj()
+    {
+        if (is_null($this->_responseObj)) {
+            $this->_responseObj = F_Controller_Response_Http::getInstance();
+        }
+        return $this->_responseObj;
     }
     
     /**

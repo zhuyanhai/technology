@@ -1,0 +1,24 @@
+DB操作方法
+
+【insert】
+
+    $rowData = array(
+        'type' => 'pc',
+        'name' => '测试一下',
+        'version' => '100',
+    );
+    $sopProductDao = Dao_Sop_Product::insert($rowData);
+
+【update】
+    
+    Dao_Sop_Product::update(array('name' => '123', 'create_time' => time(), 'update_time' => time()), 'id=:id LIMIT 1', array('id' => 1));
+
+【select】
+    
+    不指定需要查出的字段，默认是 *，查出所有字段
+    Dao_Wunderlist_Collection::fetchRowFromSlave('status=:status', array('status' => 0));
+    Dao_Wunderlist_Collection::fetchAllFromSlave('status=:status', array('status' => 0));
+
+    指定需要查出的字段
+    Dao_Wunderlist_Collection::fetchRowFromSlave('status=:status', array('status' => 0), 'id, name');
+    Dao_Wunderlist_Collection::fetchAllFromSlave('status=:status', array('status' => 0), '*');

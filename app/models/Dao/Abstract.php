@@ -31,6 +31,46 @@ Abstract class Dao_Abstract
     protected static $_primaryKey = '';
     
     /**
+     * 数据表-行数据 格式化方法
+     * 
+     * @param array $data
+     * @return array
+     */
+    public static function format($data)
+    {
+        if (!is_array($data)) {//注意，请传入正确的值
+             return $data;
+        }
+        $isMulti = true;
+        if (!isset($data[0]) && !is_array($data[0])) {
+            $isMulti = false;
+            $data = array(0 => $data);
+        }
+        $returnData = array();
+        $calledClassName = get_called_class();
+        foreach ($data as $k=>$v) {
+            $returnData[$k] = array();
+            foreach ($v as $field => $val) {
+                $returnData[$k][$field] = $val; 
+                
+                $isMethod   = '_is_' . $field;
+                $getMethod  = '_get_' . $field;
+                $showMethod = '_show_' . $field;
+                if (method_exists($calledClassName, $isMethod)) {
+                    $returnData[$k]["{$field}_OF_Is"] = static::$isMethod($val);
+                }
+                if (method_exists($calledClassName, $getMethod)) {
+                    $returnData[$k]["{$field}_OF_Get"] = static::$getMethod($val);
+                }
+                if (method_exists($calledClassName, $showMethod)) {
+                    $returnData[$k]["{$field}_OF_Show"] = static::$showMethod($val);
+                }
+            }
+        }
+        return ($isMulti)?$returnData:$returnData[0];
+    }
+
+    /**
      * 插入行记录
      * 
      * @param array $rowData 插入行的内容
@@ -75,13 +115,59 @@ Abstract class Dao_Abstract
     }
     
     /**
-     * 查询记录 - 根据条件
+     * 查询【单行】记录 - 根据条件
      * 
-     * @return F_Db_Pdo
+     * @param string $whereCondition sql语句中的where条件字符串
+     * @param array $whereBind where条件中需要绑定的变量值
+     * @param string $fields 需要查询的字段字符串
+     * @return mixed
      */
-    public static function find($fields, $whereCondition)
+    public static function fetchRowFromSlave($whereCondition, $whereBind, $fields = '*')
     {
-        //todo
+        $pdo = static::_getManager()->changeSlave();
+        return self::_find($pdo, $whereCondition, $whereBind, $fields, 'fetchRow');
+    }
+    
+    /**
+     * 查询【单行】记录 - 根据条件
+     * 
+     * @param string $whereCondition sql语句中的where条件字符串
+     * @param array $whereBind where条件中需要绑定的变量值
+     * @param string $fields 需要查询的字段字符串
+     * @return mixed
+     */
+    public static function fetchRowFromMaster($whereCondition, $whereBind, $fields = '*')
+    {
+        $pdo = static::_getManager()->changeMaster();
+        return self::_find($pdo, $whereCondition, $whereBind, $fields, 'fetchRow');
+    }
+    
+    /**
+     * 查询【多行】记录 - 根据条件
+     * 
+     * @param string $whereCondition sql语句中的where条件字符串
+     * @param array $whereBind where条件中需要绑定的变量值
+     * @param string $fields 需要查询的字段字符串
+     * @return mixed
+     */
+    public static function fetchAllFromSlave($whereCondition, $whereBind, $fields = '*')
+    {
+        $pdo = static::_getManager()->changeSlave();
+        return self::_find($pdo, $whereCondition, $whereBind, $fields, 'fetchAll');
+    }
+    
+    /**
+     * 查询【多行】记录 - 根据条件
+     * 
+     * @param string $whereCondition sql语句中的where条件字符串
+     * @param array $whereBind where条件中需要绑定的变量值
+     * @param string $fields 需要查询的字段字符串
+     * @return mixed
+     */
+    public static function fetchAllFromMaster($whereCondition, $whereBind, $fields = '*')
+    {
+        $pdo = static::_getManager()->changeMaster();
+        return self::_find($pdo, $whereCondition, $whereBind, $fields, 'fetchAll');
     }
     
     /**
@@ -110,8 +196,13 @@ Abstract class Dao_Abstract
         }
         
         if (empty($result)) {//缓存中没有，从数据库中获取
-            
+            $pdo = static::_getManager()->changeMaster();
+            $whereCondition = "{$fieldKey}=:{$fieldKey}";
+            $whereBind = array($fieldKey => $fieldValue);
+            $result = self::_find($pdo, $whereCondition, $whereBind, '*', 'fetchRow');
         }
+        
+        return $result;
     }
  
 //---- 以下为私有方法
@@ -169,6 +260,39 @@ Abstract class Dao_Abstract
             ));
         }
         return $pdo;
+    }
+    
+    /**
+     * 查询(单行或多行)记录 - 根据条件
+     * 
+     * 私有方法
+     * 服务于 fetchRowFromSlave、fetchRowFromMaster、 fetchAllFromSlave、fetchAllFromMaster 方法
+     * 
+     * @param F_Db_Pdo $pdo
+     * @param string $whereCondition sql语句中的where条件字符串
+     * @param array $whereBind where条件中需要绑定的变量值
+     * @param string $fields 需要查询的字段字符串
+     * @param string $fetchMethod 查询使用手段 fetchRow 或 fetchAll
+     * @return mixed
+     */
+    private static function _find(&$pdo, $whereCondition, $whereBind, $fields, $fetchMethod)
+    {
+        $dbName    = F_Db_PdoConnectPool::getDbName(static::$_dbShortName);
+        $tableName = static::$_tableName;
+        $sql = "SELECT {$fields} FROM {$dbName}.{$tableName} WHERE {$whereCondition}";
+        $pdo->prepare($sql);
+        foreach ($whereBind as $wk => $wv) {
+            $wkParam = ':'.$wk;
+            if (!preg_match('%'.$wkParam.'%', $whereCondition)) {
+                throw new PDOException('Pdo update where bindParam ['.$wkParam.'] not exist');
+            }
+            $pdo->bindParam($wkParam, $wv, PDO::PARAM_STR);
+        }
+        if ('fetchRow' === $fetchMethod) {
+            return $pdo->fetchRow();
+        } else {
+            return $pdo->fetchAll();
+        }
     }
     
 //----- 以下是 hook 方法，可在子类中使用，使用时必须调用相关的父类方法，例如： parent::_insert($rowData);

@@ -66,7 +66,7 @@ final class F_Application
         if (isset($this->_configs['autoloaderNamespaces'])) {
             self::$_autoloadNamespaces = array_merge(self::$_autoloadNamespaces, $this->_configs['autoloaderNamespaces']);
         }
-        
+
         if (!Utils_EnvCheck::isCli()) {//非cli方式执行脚本
             if (!isset($_SERVER['HTTP_HOST'])) {
                 throw new F_Application_Exception('HTTP_HOST notfound');
@@ -111,13 +111,26 @@ final class F_Application
         } else {
             $classArray = explode('_', $class);
         }
-        
+
         if (!isset(self::$_autoloadNamespaces[$classArray[0].'_'])) {
             throw new F_Application_Exception('autoloadNamespaces 不存在', 6666);
         }
 
         // 自动组织类路径
-        $file = self::$_autoloadNamespaces[$classArray[0].'_'] . strtr($class, '_', DIRECTORY_SEPARATOR) . '.php';
+        switch ($classArray[0]) {
+            case 'DAPI':
+            case 'MAPI':
+                $namespace = $classArray[0];
+                $classArray = explode('_', $class);
+                $tmp = $classArray[0];
+                $classArray[0] = $classArray[1];
+                $classArray[1] = $tmp;
+                $file = self::$_autoloadNamespaces[$namespace.'_'] . implode(DIRECTORY_SEPARATOR, $classArray) . '.php';
+                break;
+            default:
+                $file = self::$_autoloadNamespaces[$classArray[0].'_'] . strtr($class, '_', DIRECTORY_SEPARATOR) . '.php';
+                break;
+        }
 
         // 检查文件是否存在
 		if(false === file_exists($file)){

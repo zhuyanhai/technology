@@ -1,6 +1,6 @@
 <?php
 $bM = (memory_get_usage() / 1024);
-echo 'a = ',$bM , ' KB<br />';
+//echo 'a = ',$bM , ' KB<br />';
 
 //判断是否为 CLI 脚本 1 = 是 0 = 不是
 defined('DEFAULT_CLI') || define( 'DEFAULT_CLI', 0);
@@ -28,5 +28,5 @@ require ROOT_PATH . '/library/F/Application.php';
 F_Application::getInstance()->bootstrap()->run();
 
 $eM = (memory_get_usage() / 1024);
-echo '<br />a = ' , $eM , ' KB<br />';
-echo 'a = ',($eM - $bM) , ' KB<br />';
+//echo '<br />a = ' , $eM , ' KB<br />';
+//echo 'a = ',($eM - $bM) , ' KB<br />';

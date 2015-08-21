@@ -93,6 +93,17 @@ class F_Controller_Response_Http
     }
     
     /**
+     * 发送响应内容(并且停止程序), 包括所有 headers, rendering exceptions if so requested.
+     *
+     * @return void
+     */
+    public function sendResponseAndExit()
+    {
+        $this->sendResponse();
+        exit;
+    }
+    
+    /**
      * 检测是否能发送 headers
      *
      * @param boolean $throw Whether or not to throw an exception if headers have been sent; defaults to false

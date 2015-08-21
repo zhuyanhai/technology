@@ -30,4 +30,5 @@ class Dao_Sop_PassportPhone extends Dao_Abstract
      * @var string
      */
     protected static $_primaryKey = 'phone';
+
 }

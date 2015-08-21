@@ -60,4 +60,5 @@ class Dao_Sop_User extends Dao_Abstract
             'pageTotal' => 'all',
         ),
     );
+
 }

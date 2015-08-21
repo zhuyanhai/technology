@@ -71,6 +71,12 @@ class F_Controller_Router_Route
         
         $requestObj = F_Controller_Request_Http::getInstance();
         
+        //桌面应用
+        $this->_startupOfDapiCheck($requestObj);
+        
+        //手机应用
+        $this->_startupOfMapiCheck($requestObj);
+        
         if (!empty(self::$_routeRegexRules)) {//使用正则形式检测符合的路由
             //todo
         }
@@ -133,6 +139,28 @@ class F_Controller_Router_Route
             }
         }
         
-        $requestObj->setModule($module)->setController($controller)->setAction($action);  
+        $requestObj->setModule($module)->setController($controller)->setAction($action);
+    }
+    
+    /**
+     * 路由启动前关于【桌面应用】访问检测并处理
+     */
+    private function _startupOfDapiCheck($requestObj)
+    {
+        $requestMethod = Utils_Validation::filter($requestObj->getParam('sDrMethod', ''))->removeStr()->removeHtml()->receive();
+        if (!empty($requestMethod)) {//手机接口请求处理
+            $requestObj->setRequestUri('/dapi/run');
+        }
+    }
+    
+    /**
+     * 路由启动前关于【手机应用】访问检测并处理
+     */
+    private function _startupOfMapiCheck($requestObj)
+    {
+        $requestMethod = Utils_Validation::filter($requestObj->getParam('sMrMethod', ''))->removeStr()->removeHtml()->receive();
+        if (!empty($requestMethod)) {//手机接口请求处理
+            $requestObj->setRequestUri('/mapi/run');
+        }
     }
 }

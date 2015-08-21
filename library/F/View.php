@@ -72,6 +72,19 @@ final class F_View
     {
         $this->_layoutPath = $filename;
     }
+    
+    /**
+     * 判断是否设置了layout
+     * 
+     * return boolean true=已设置 false=未设置
+     */
+    public function isSetLayout()
+    {
+        if (empty($this->_layoutPath)) {
+            return false;
+        }
+        return true;
+    }
 
     /**
      * 禁用布局

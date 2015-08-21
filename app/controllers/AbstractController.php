@@ -21,15 +21,23 @@ abstract class AbstractController extends F_Controller_ActionAbstract
         //检测用户是否登录
     }
     
+    /**
+     * action 执行前
+     */
     public function preDispatch()
     {
         parent::preDispatch();
     }
     
+    /**
+     * action 执行后
+     */
     public function postDispatch()
     {
         parent::postDispatch();
         
-        $this->view->setLayout('layout_default');
+        if (!$this->view->isSetLayout()) {//未设置，设置成默认布局
+            $this->view->setLayout('layout_default');
+        }
     }
 }
