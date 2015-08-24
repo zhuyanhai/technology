@@ -61,7 +61,7 @@ final class F_Application
         self::$_autoloadNamespaces = array(
             'F_' => $libraryPath,
             'C_' => $libraryPath,
-            'T_' => $librarypath,
+            'T_' => $libraryPath,
             'Utils_' => $libraryPath,
             'Bll_' => APPLICATION_PATH . '/models/',
             'Dao_' => APPLICATION_PATH . '/models/',

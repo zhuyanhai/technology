@@ -11,8 +11,6 @@ class IndexController extends AbstractController
     public function indexAction()
     {
         $this->view->name = 'HI';
-        F_Log::factory()->error('debug model');
-        exit;
     }
     
 }

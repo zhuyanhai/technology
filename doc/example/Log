@@ -1,0 +1,9 @@
+Log操作方法
+
+F_Log::factory()->info('debug model');
+F_Log::factory()->debug('debug model');
+F_Log::factory()->error('file model');
+F_Log::factory()->warn('file model');
+F_Log::factory()->fatal('file model');
+
+F_Log::factory('thread')->fatal('file model');
