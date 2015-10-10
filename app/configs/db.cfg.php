@@ -14,7 +14,7 @@ return array(
             'host'     => '192.168.0.235',
             'port'     => '3306',
         ),
-        'username' => 'app1',
+        'username' => 'app2',
         'password' => '19820111',
         'charset'  => 'utf8mb4',
         'collation' => 'utf8mb4_general_ci',
