@@ -46,6 +46,16 @@ final class C_View_Helper_InitPageNecessary
                     }
                 }
             }();
+            var __ajaxIsSuccess = function(result)
+            {
+                if (parseInt(result.status) === 0) {
+                    return true;
+                }
+                if (parseInt(result.status) === -110) {//未登陆
+                    //todo
+                }
+                return false;
+            };
             __ns.namespace('env');
             __ns.namespace('user');
             __ns.env = {domain:'{$cookieCfgs['domain']}'};

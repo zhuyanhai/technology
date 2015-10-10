@@ -1,0 +1,31 @@
+<form class="form-signin">
+    <h2 class="form-signin-heading">Please sign in</h2>
+    <label for="account" class="sr-only">Email address</label>
+    <input type="email" id="account" class="form-control" placeholder="Email address / Mobile" required autofocus>
+    <label for="passwd" class="sr-only">Password</label>
+    <div class="mt-10"></div>
+    <input type="password" id="passwd" class="form-control" placeholder="Password" required>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" value="remember-me"> Remember me
+      </label>
+    </div>
+    <button class="btn btn-lg btn-primary btn-block" type="button" id="loginBtn">Sign in</button>
+    <button class="btn btn-lg btn-primary btn-block" type="button" id="registerBtn">Sign up</button>
+</form>
+<script>
+var referUrl = '<?php echo $this->referUrl?>';
+__wait(function(){
+  $('#loginBtn').on('click', function(){
+      var account = $.trim($('#account').val());
+      var passwd  = $.trim($('#passwd').val());
+      $.post('/login/', {account:account, passwd:passwd}, function(result){
+          if (__ajaxIsSuccess(result)) {
+              window.location.href = referUrl;
+          } else {
+              alert(result.msg);
+          }
+      });
+  });
+});
+</script>

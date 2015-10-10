@@ -2,7 +2,7 @@
 /**
  * tbl_product 数据表类
  * 
- * 账号信息 - 关于手机号登录校验
+ * 产品 － 基本信息
  * 
  * @package Dao
  * @subpackage Dao_Sop

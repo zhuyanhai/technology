@@ -11,6 +11,10 @@
  * @method void warn(string $message) 警告日志，表明会出现潜在错误的情形
  * @method void error(string $message) 错误日志，指出虽然发生错误事件，但仍然不影响系统的继续运行
  * @method void fatal(string $message) 致命日志，指出每个严重的错误事件将会导致应用程序的退出
+ * 
+ * 例子：
+ * F_Log::factory()->error('error model');
+ * F_Log::factory('product')->debug('debug model');
  */
 final class F_Log
 {

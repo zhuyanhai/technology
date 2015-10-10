@@ -40,4 +40,18 @@ final class Utils_CheckRequest
     {
         return (F_MobileDetect::getInstance()->isTablet())? true:false;
     }
+    
+    /**
+     * 请求是否来至微信
+     * 
+     * return boolean true是 false否
+     */
+    public static function isFromWechat()
+    {
+        if (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') !== false) {
+           return true;
+        } else {
+            return false;
+        }
+    }
 }
