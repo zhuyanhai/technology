@@ -1,3 +1,5 @@
 /nbproject/private/
 /nbproject
 db.cfg.php
+
+app/configs/db.cfg.php
