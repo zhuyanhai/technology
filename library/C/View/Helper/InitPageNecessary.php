@@ -15,9 +15,10 @@ final class C_View_Helper_InitPageNecessary
     public function initPageNecessary()
     {
         $cookieCfgs = F_Application::getInstance()->getConfigs('cookie');
+        $cookieDomain = trim($cookieCfgs['domain'], '.');
         return <<<EOF
         <script>
-            document.domain = '{$cookieCfgs['domain']}';
+            document.domain = '{$cookieDomain}';
             var __ns = {
                 namespace:function(e)
                 {
