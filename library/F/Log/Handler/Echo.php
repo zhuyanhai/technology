@@ -34,5 +34,9 @@ EOF;
 	{
         $logMessage = $this->_format().PHP_EOL;
         array_push($this->_logMessages, $logMessage);
+        //当 $_GET 参数中带有 sLogFlag 参数时，并且参数值＝echo，就会在程序结束后打印到页面上
+        if (isset($_GET['sLogFlag']) && $_GET['sLogFlag'] === 'echo') {
+            echo $logMessage;
+        }
 	}
 }

@@ -5,10 +5,44 @@
  * @author allen <allenifox@163.com>
  */
 return array(
-    //php 错误配置
-    'phpSettings' => array(
-        'display_errors' => 1,
-        'error_reporting' => E_ALL | E_STRICT,
+    //与运行环境有关的配置
+    'environments' => array(
+        'dev' => array(//开发环境
+            //php 错误配置
+            'phpSettings' => array(
+                'display_errors' => 1,
+                'display_startup_errors' => 1,
+                'track_errors' => 1,
+                'error_reporting' => E_ALL | E_STRICT,
+            ),
+        ),
+        'test_dev' => array(//测试环境
+            //php 错误配置
+            'phpSettings' => array(
+                'display_errors' => 1,
+                'display_startup_errors' => 1,
+                'track_errors' => 1,
+                'error_reporting' => E_ALL | E_STRICT,
+            ),
+        ),
+        'test_online' => array(//线上测试环境
+            //php 错误配置
+            'phpSettings' => array(
+                'display_errors' => 0,
+                'display_startup_errors' => 0,
+                'track_errors' => 0,
+                'error_reporting' => E_ALL | E_STRICT,
+            ),
+        ),
+        'online' => array(//线上正式环境
+            //php 错误配置
+            'phpSettings' => array(
+                'display_errors' => 0,
+                'display_startup_errors' => 0,
+                'track_errors' => 0,
+                'error_reporting' => E_ALL | E_STRICT,
+            ),
+        ),
     ),
     //页面布局配置
     'view' => array(

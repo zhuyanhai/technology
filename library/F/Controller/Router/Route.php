@@ -85,7 +85,7 @@ class F_Controller_Router_Route
             
             $path = $requestObj->getRequestUri();
             $path = trim($path);
-            
+
             if (empty($path)) {
                 throw new F_Controller_Router_Exception();
             }
@@ -96,10 +96,23 @@ class F_Controller_Router_Route
             
             if ('/' !== $path) {
                 $checkModuleExist = false;
-                $path = trim($path, '/');
+                $path = explode('?', $path);
+                if (count($path) > 1) {
+                    $tmpParams = $path[1];
+                    $path = trim($path[0], '/');
+                    $tmpParams = explode('&', $tmpParams);
+                    $params = array();
+                    foreach ($tmpParams as $tp) {
+                        $tpp = explode('=', $tp);
+                        $params[$tpp[0]] = $tpp[1];
+                    }
+                } else {
+                    $path = trim($path[0], '/');
+                }
+
                 $pathArray = explode($this->_urlDelimiter, $path);
                 $pathArrayCount = count($pathArray);
-                
+
                 if (1 === $pathArrayCount) {// REQUEST_URI = /demo
                     $checkModuleExist = true;
                     $controller = $pathArray[0];

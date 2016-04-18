@@ -36,6 +36,25 @@ final class Utils_Http
     }
     
     /**
+     * 返回前一个请求页面地址
+     * 
+     * @param string $default 没有refer时的默认返回值
+     * @param string $regular 正则表达式，判断如果true，refer返回空 例如：'/utanbaby\.com\/(login|register)/i'
+     * @return string
+     */
+    public static function getReferer($default = '', $regular = '')
+    {
+        $refer = isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'';
+        if (!empty($refer) && !empty($regular) && preg_match($regular, $refer)) {
+            $refer = '';
+        }
+        if (empty($refer) && !empty($default)) {
+            return $default;
+        }
+    	return $refer;
+    }
+    
+    /**
      * 输出页面编码，在没有layout的情况下
      *
      * @param string $encoding 编码值

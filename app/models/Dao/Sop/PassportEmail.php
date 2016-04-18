@@ -29,6 +29,6 @@ class Dao_Sop_PassportEmail extends Dao_Abstract
      * 
      * @var string
      */
-    protected static $_primaryKey = 'email';
+    protected static $_primaryKey = 'account';
     
 }

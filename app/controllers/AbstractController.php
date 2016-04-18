@@ -12,13 +12,14 @@ abstract class AbstractController extends F_Controller_ActionAbstract
      * 
      * @var type 
      */
-    public $user = null;
+    public $loginUser = null;
             
     public function __construct()
     {
         parent::__construct();
         
-        //检测用户是否登录
+        //检测用户登录
+        $this->loginUser = Bll_User::getInstance()->checkLogin();
     }
     
     /**
@@ -39,5 +40,24 @@ abstract class AbstractController extends F_Controller_ActionAbstract
         if (!$this->view->isSetLayout()) {//未设置，设置成默认布局
             $this->view->setLayout('layout_default');
         }
+    }
+    
+    /**
+     * 检查是否登陆
+     * 
+     * -未登陆，非ajax，跳转到登陆页
+     * -未登陆，ajax，直接给客户端返回未登陆标记
+     */
+    public function checkLoginAndGoto()
+    {
+        if (empty($this->loginUser)) {//用户未登陆，跳转到登陆页，如果时ajax，就直接返回
+            if ($this->_requestObj->isXmlHttpRequest()) {//是ajax
+                $this->error('请先登陆', -110)->response();
+            } else {//非ajax
+                $this->_redirectorObj->gotoUrlAndExit('/login/');
+            }
+        }
+        
+        return true;
     }
 }

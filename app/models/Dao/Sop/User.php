@@ -2,7 +2,7 @@
 /**
  * tbl_user 数据表类
  * 
- * 用户信息
+ * 用户信息 － 基本信息
  * 
  * @package Dao
  * @subpackage Dao_Sop

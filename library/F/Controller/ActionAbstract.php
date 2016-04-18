@@ -70,6 +70,7 @@ abstract class F_Controller_ActionAbstract
         $this->_requestObj     = F_Controller_Request_Http::getInstance();
         $this->_responseObj    = F_Controller_Response_Http::getInstance();
         $this->view            = F_View::getInstance();
+        $this->_redirectorObj  = F_Controller_Redirector::getInstance();
     }
     
     /**

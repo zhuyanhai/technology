@@ -11,7 +11,7 @@ class Bll_Wunderlist_Collection
     /**
      * 获取类实例
      *
-     * @staticvar array $instance
+     * @staticvar Bll_Wunderlist_Collection $instance
      * @return \Bll_Wunderlist_Collection
      */
     public static function getInstance()
