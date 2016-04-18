@@ -52,6 +52,8 @@
                                 echo $this->render('slot/menu_list_of_product');
                             } elseif ($this->visitCheck(array('module' => 'frameworkStudy'))) {
                                 echo $this->render('slot/menu_list_of_frameworkStudy');
+                            } elseif ($this->visitCheck(array('module' => 'study'))) {
+                                echo $this->render('slot/menu_list_of_study');
                             } else {
                                 echo '<li class="active"><a href="###" onclick="return false;">Overview</a></li>';
                             }
@@ -65,11 +67,11 @@
                                 var flag = $this.data('flag');
                                 if (flag === 'plus') {
                                     $('span', this).removeClass('glyphicon-plus').addClass('glyphicon-minus');
-                                    $('ul', $this.parent()).removeClass('hide');
+                                    $this.siblings('ul').removeClass('hide');
                                     $this.data('flag', 'minus');
                                 } else {
                                     $('span', this).removeClass('glyphicon-minus').addClass('glyphicon-plus');
-                                    $('ul', $this.parent()).addClass('hide');
+                                    $this.siblings('ul').addClass('hide');
                                     $this.data('flag', 'plus');
                                 }
                             });
